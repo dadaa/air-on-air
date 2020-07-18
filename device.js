@@ -127,7 +127,7 @@ class App {
   }
 
   async onData({ data }) {
-    console.log("onData:"+data.command);
+    console.log("onData:"+data);
   }
 
   async onJoin(peerId) {

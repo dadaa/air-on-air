@@ -3,7 +3,6 @@ class App {
     this.onClickConnect = this.onClickConnect.bind(this);
     this.onClickAudioMuting = this.onClickAudioMuting.bind(this);
 
-    this.onData = this.onData.bind(this);
     this.onLeave = this.onLeave.bind(this);
     this.onStream = this.onStream.bind(this);
 
@@ -40,13 +39,14 @@ class App {
       mode: this.network,
     });
 
-    room.on("data", this.onData);
     room.on("stream", this.onStream);
     room.on("peerLeave", this.onLeave);
 
     this.peer = peer;
     this.room = room;
     this.stream = stream;
+
+    this.play();
   }
 
   connectPeer(key) {
@@ -57,11 +57,10 @@ class App {
   }
 
   dispatchToRoom(data) {
-    this.onData({ src: this.peer.id, data: data });
+    this.room.send(data);
   }
 
   async getAudioStream() {
-    const devices = await this.getVideoInputDevices();
     const stream = await navigator.mediaDevices.getUserMedia({
       audio: true,
       video: false,
@@ -69,9 +68,32 @@ class App {
     return stream;
   }
 
-  async getVideoInputDevices() {
-    const devices = await navigator.mediaDevices.enumerateDevices();
-    return devices.filter(device => device.kind === "videoinput");
+  play() {
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    const audioContext = new AudioContext();
+    const mediaStreamSource = audioContext.createMediaStreamSource(this.stream);
+	  const processor = audioContext.createScriptProcessor(512);
+
+    let previousTime = Date.now();
+	  processor.onaudioprocess = e => {
+      const currentTime = Date.now();
+      if (currentTime - previousTime < 100) {
+        return;
+      }
+      previousTime = currentTime;
+
+	    const buffer = e.inputBuffer.getChannelData(0);
+	    let sum = 0;
+
+      for (const v of buffer) {
+        sum += v * v;
+      }
+
+      const volume =  (Math.sqrt(sum / buffer.length) * 100).toPrecision(3);
+      this.dispatchToRoom(volume);
+    };
+    mediaStreamSource.connect(processor);
+	  processor.connect(audioContext.destination);
   }
 
   onClickAudioMuting({ target }) {
@@ -92,12 +114,8 @@ class App {
     $("#connect-form").remove();
   }
 
-  async onData({ data }) {
-    console.log(data.command);
-  }
-
   async onLeave(peerId) {
-    $(`#${ this.getAudienceId(peerId) }`).remove();
+    console.log("onLeave:"+peerId);
   }
 
   async onStream(stream) {

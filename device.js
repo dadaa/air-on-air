@@ -1,3 +1,6 @@
+const SERVICE_UUID = "dedc07fa-e0b0-4aa3-b411-38c95242ebc7"
+const CHARACTERISTIC_UUID = "c63bcbc3-af3f-46da-9893-556e6e763f1e"
+
 class App {
   constructor() {
     this.onClickConnect = this.onClickConnect.bind(this);
@@ -39,6 +42,9 @@ class App {
   async connect() {
     const peer = await this.connectPeer(this.key);
     const stream = await this.getNextVideoStream();
+    const ble = await this.getBLECharacteristic();
+
+
     const room = peer.joinRoom(this.roomId, {
       mode: this.network,
       stream: stream
@@ -50,6 +56,7 @@ class App {
 
     this.peer = peer;
     this.room = room;
+    this.ble = ble;
 
     const presenterVideo = $("#presenter-stream");
     presenterVideo.muted = true;
@@ -67,6 +74,18 @@ class App {
 
   dispatchToRoom(data) {
     this.onData({ src: this.peer.id, data: data });
+  }
+
+  async getBLECharacteristic() {
+    const device = await navigator.bluetooth.requestDevice({
+      acceptAllDevices: false,
+      filters: [{ namePrefix: "xlab" }],
+      optionalServices: [SERVICE_UUID]
+    })
+    const server = await device.gatt.connect();
+    const service = await server.getPrimaryService(SERVICE_UUID);
+    const characteristic = await service.getCharacteristic(CHARACTERISTIC_UUID);
+    return characteristic;
   }
 
   async getNextVideoStream() {
@@ -128,6 +147,9 @@ class App {
 
   async onData({ data }) {
     console.log("onData:"+data);
+    const encoder = new TextEncoder();
+    const bleValue = encoder.encode(data);
+    this.ble.writeValue(bleValue);
   }
 
   async onJoin(peerId) {

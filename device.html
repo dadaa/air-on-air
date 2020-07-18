@@ -1,0 +1,27 @@
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Air on Air - Device</title>
+    <script type="text/javascript" src="https://cdn.webrtc.ecl.ntt.com/skyway-latest.js"></script>
+    <script type="text/javascript" src="device.js"></script>
+    <link rel="stylesheet" href="device.css">
+  </head>
+  <body>
+    <section id="connect-form">
+      <button id="connect-button">
+        <label>connect to </label>
+        <label id="room-label"></label>
+      </button>
+    </section>
+
+    <main>
+      <aside id="controller">
+        <button id="camera-switching"></button>
+        <button id="camera-muting"></button>
+      </aside>
+      <section id="presenter">
+        <video id="presenter-stream"></video>
+      </section>
+    </main>
+  </body>
+</html>

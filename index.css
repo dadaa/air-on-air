@@ -1,0 +1,92 @@
+body {
+  overflow: hidden;
+  padding: 0;
+  margin: 0;
+}
+
+ul, li {
+  margin: 0;
+  padding: 0;
+}
+
+#connect-form {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background-color: #f9f9fa;
+  z-index: 2;
+}
+
+#connect-form.error {
+  color: #d70022;
+  font-size: 3vw;
+  font-weight: 100;
+}
+
+#connect-button {
+  background: none;
+  border: 1px solid #38383d;
+  color: #38383d;
+  font-size: 5vw;
+  font-weight: 100;
+}
+
+#connect-button:disabled {
+  border-color: #d7d7db;
+  color: #d7d7db;
+}
+
+#room-label {
+  font-weight: 400;
+}
+
+main {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: #0c0c0d;
+  width: 100%;
+  height: 100%;
+}
+
+#presenter {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+#presenter-stream {
+  height: 100%;
+}
+
+#controller {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 1;
+  pointer-events: none;
+}
+
+#controller button {
+  width: 100px;
+  height: 100px;
+  background-color: transparent;
+  background-size: cover;
+  border: none;
+  outline: none;
+  pointer-events: auto;
+}
+
+#audio-muting {
+  background-image: url(./images/audio-muting.svg);
+}
+
+#audio-muting.disabled {
+  background-image: url(./images/audio-muting-disabled.svg);
+}

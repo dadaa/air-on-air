@@ -1,0 +1,13 @@
+{
+  "name": "air-on-air",
+  "version": "0.0.1",
+  "description": "Air on Air",
+  "scripts": {
+    "start": "http-server -p 8080 -o -S"
+  },
+  "author": "",
+  "license": "",
+  "dependencies": {
+    "http-server": "^0.10.0"
+  }
+}

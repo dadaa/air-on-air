@@ -85,7 +85,7 @@ class App {
   async getBLECharacteristic() {
     const device = await navigator.bluetooth.requestDevice({
       acceptAllDevices: false,
-      filters: [{ namePrefix: "xlab" }],
+      filters: [{ namePrefix: "aironair" }],
       optionalServices: [SERVICE_UUID]
     })
     const server = await device.gatt.connect();

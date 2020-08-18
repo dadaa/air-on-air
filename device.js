@@ -1,5 +1,4 @@
 const SERVICE_UUID = "dedc07fa-e0b0-4aa3-b411-38c95242ebc7"
-const CHARACTERISTIC_UUID = "c63bcbc3-af3f-46da-9893-556e6e763f1e"
 
 class App {
   constructor() {
@@ -20,6 +19,7 @@ class App {
     this.key = url.searchParams.get("key");
     this.roomId = url.searchParams.get("roomId");
     this.network = url.searchParams.get("network");
+    this.cid = url.searchParams.get("cid");
 
     if (!this.key || !this.roomId || !this.network) {
       $("#connect-form").textContent = "No key, room id or network";
@@ -29,6 +29,12 @@ class App {
 
     if (this.network !== "sfu" && this.network !== "mesh") {
       $("#connect-form").textContent = "network should be 'sfu' or 'mesh'";
+      $("#connect-form").classList.add("error");
+      return;
+    }
+
+    if (!this.cid) {
+      $("#connect-form").textContent = "No cid found";
       $("#connect-form").classList.add("error");
       return;
     }
@@ -84,7 +90,7 @@ class App {
     })
     const server = await device.gatt.connect();
     const service = await server.getPrimaryService(SERVICE_UUID);
-    const characteristic = await service.getCharacteristic(CHARACTERISTIC_UUID);
+    const characteristic = await service.getCharacteristic(this.cid);
     return characteristic;
   }
 

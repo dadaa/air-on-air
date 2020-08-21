@@ -74,7 +74,7 @@ class App {
     const mediaStreamSource = audioContext.createMediaStreamSource(this.stream);
 	  const processor = audioContext.createScriptProcessor(512);
 
-    const indicatorAmountEls = document.querySelectorAll(".indicator-amount");
+    const tickEls = document.querySelectorAll(".indicator-tick");
 
     let previousTime = Date.now();
 	  processor.onaudioprocess = e => {
@@ -95,14 +95,14 @@ class App {
       const signal = rms > 0.1 ? 1 : 0;
       this.dispatchToRoom(signal);
 
-      const indicateClassName = signal ? "active" : "inactive";
-      for (let i = 0; i < indicatorAmountEls.length; i++) {
-        const element = indicatorAmountEls[i];
-        element.classList.remove("active");
-        element.classList.remove("inactive");
+      const tickClassName = signal ? "active" : "inactive";
+      for (let i = 0; i < tickEls.length; i++) {
+        const tickEl = tickEls[i];
+        tickEl.classList.remove("active");
+        tickEl.classList.remove("inactive");
 
-        if (rms * indicatorAmountEls.length > i + 1) {
-          element.classList.add(indicateClassName);
+        if (rms * tickEls.length > i + 1) {
+          tickEl.classList.add(tickClassName);
         }
       }
     };

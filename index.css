@@ -103,17 +103,17 @@ main {
   justify-content: space-evenly;
 }
 
-.indicator-amount {
+.indicator-tick {
   height: 100%;
   background-color: #d7d7db;
   width: 2%;
   border-radius: 5px;
 }
 
-.indicator-amount.active {
+.indicator-tick.active {
   background-color: #ff1ad9;
 }
 
-.indicator-amount.inactive {
+.indicator-tick.inactive {
   background-color: #12bc00;
 }

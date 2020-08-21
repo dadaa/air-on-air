@@ -74,6 +74,8 @@ class App {
     const mediaStreamSource = audioContext.createMediaStreamSource(this.stream);
 	  const processor = audioContext.createScriptProcessor(512);
 
+    const indicatorAmountEls = document.querySelectorAll(".indicator-amount");
+
     let previousTime = Date.now();
 	  processor.onaudioprocess = e => {
       const currentTime = Date.now();
@@ -82,15 +84,27 @@ class App {
       }
       previousTime = currentTime;
 
-	    const buffer = e.inputBuffer.getChannelData(0);
-	    let sum = 0;
+      const buffer = e.inputBuffer.getChannelData(0)
 
-      for (const v of buffer) {
-        sum += v * v;
+      let total = 0;
+      for (let i = 0; i < buffer.length; i++) {
+        total += Math.abs(buffer[i]);
       }
 
-      const volume =  (Math.sqrt(sum / buffer.length) * 100).toPrecision(3);
-      this.dispatchToRoom(volume);
+      const rms = Math.sqrt(total / buffer.length);
+      const signal = rms > 0.1 ? 1 : 0;
+      this.dispatchToRoom(signal);
+
+      const indicateClassName = signal ? "active" : "inactive";
+      for (let i = 0; i < indicatorAmountEls.length; i++) {
+        const element = indicatorAmountEls[i];
+        element.classList.remove("active");
+        element.classList.remove("inactive");
+
+        if (rms * indicatorAmountEls.length > i + 1) {
+          element.classList.add(indicateClassName);
+        }
+      }
     };
     mediaStreamSource.connect(processor);
 	  processor.connect(audioContext.destination);

@@ -150,6 +150,7 @@ class App {
     }
 
     this.currentUser = data.currentUser;
+    document.thisUser = this.peer.id;
     document.currentUser = data.currentUser;
     document.isAlreadyPlayed = this.isAlreadyPlayed;
   }

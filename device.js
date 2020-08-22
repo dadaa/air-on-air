@@ -1,4 +1,5 @@
 const SERVICE_UUID = "dedc07fa-e0b0-4aa3-b411-38c95242ebc7"
+const MAX_PLAYING_TIME = 30 * 1000;
 
 class App {
   constructor() {
@@ -46,10 +47,12 @@ class App {
   }
 
   async connect() {
+    this.currentUser = null;
+    this.startStatusDispatching();
+
     const peer = await this.connectPeer(this.key);
     const stream = await this.getNextVideoStream();
     const ble = await this.getBLECharacteristic();
-
 
     const room = peer.joinRoom(this.roomId, {
       mode: this.network,
@@ -79,7 +82,7 @@ class App {
   }
 
   dispatchToRoom(data) {
-    this.onData({ src: this.peer.id, data: data });
+    this.room.send(data);
   }
 
   async getBLECharacteristic() {
@@ -151,10 +154,18 @@ class App {
     $("#connect-form").remove();
   }
 
-  async onData({ data }) {
-    console.log("onData:"+data);
+  async onData({ src, data }) {
+    if (this.currentUser === null) {
+      this.startPlaying(src);
+    } else if (this.currentUser !== src) {
+      // Another user is playing now.
+      return;
+    }
+
+    const { signal } = data;
+    console.log("signal:"+data.signal);
     const encoder = new TextEncoder();
-    const bleValue = encoder.encode(data);
+    const bleValue = encoder.encode(signal);
     this.ble.writeValue(bleValue);
   }
 
@@ -164,6 +175,27 @@ class App {
 
   async onLeave(peerId) {
     console.log("onLeave:"+peerId);
+    if (this.currentUser === peerId) {
+      this.stopPlaying();
+    }
+  }
+
+  startPlaying(user) {
+    this.currentUser = user;
+    this.playingTimer = setTimeout(() => {
+      this.stopPlaying();
+    }, MAX_PLAYING_TIME);
+  }
+
+  stopPlaying() {
+    clearTimeout(this.playingTimer);
+    this.currentUser = null;
+  }
+
+  startStatusDispatching() {
+    setInterval(() => {
+      this.dispatchToRoom({ currentUser: this.currentUser });
+    }, 1000);
   }
 }
 

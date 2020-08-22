@@ -3,6 +3,7 @@ class App {
     this.onClickConnect = this.onClickConnect.bind(this);
     this.onClickAudioMuting = this.onClickAudioMuting.bind(this);
 
+    this.onData = this.onData.bind(this);
     this.onLeave = this.onLeave.bind(this);
     this.onStream = this.onStream.bind(this);
 
@@ -33,12 +34,15 @@ class App {
   }
 
   async connect() {
+    this.currentUser = null;
+
     const peer = await this.connectPeer(this.key);
-    const stream = await this.getAudioStream();
     const room = peer.joinRoom(this.roomId, {
       mode: this.network,
     });
+    const stream = await this.getAudioStream();
 
+    room.on("data", this.onData);
     room.on("stream", this.onStream);
     room.on("peerLeave", this.onLeave);
 
@@ -78,6 +82,14 @@ class App {
 
     let previousTime = Date.now();
 	  processor.onaudioprocess = e => {
+      if (this.currentUser === null && this.isAlreadyPlayed) {
+        return;
+      }
+
+      if (this.currentUser && this.currentUser !== this.peer.id) {
+        return;
+      }
+
       const currentTime = Date.now();
       if (currentTime - previousTime < 100) {
         return;
@@ -93,7 +105,7 @@ class App {
 
       const rms = Math.sqrt(total / buffer.length);
       const signal = rms > 0.1 ? 1 : 0;
-      this.dispatchToRoom(signal);
+      this.dispatchToRoom({ signal });
 
       const tickClassName = signal ? "active" : "inactive";
       for (let i = 0; i < tickEls.length; i++) {
@@ -126,6 +138,20 @@ class App {
     }
 
     $("#connect-form").remove();
+  }
+
+  async onData({ data }) {
+    if (typeof data.currentUser === "undefined") {
+      return;
+    }
+
+    if (this.peer.id === data.currentUser) {
+      this.isAlreadyPlayed = true;
+    }
+
+    this.currentUser = data.currentUser;
+    document.currentUser = data.currentUser;
+    document.isAlreadyPlayed = this.isAlreadyPlayed;
   }
 
   async onLeave(peerId) {

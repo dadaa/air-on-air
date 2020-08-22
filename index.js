@@ -94,7 +94,7 @@ class App {
 
     let previousTime = Date.now();
 	  processor.onaudioprocess = e => {
-      if (true || this.currentUser === null && this.isAlreadyPlayed) {
+      if (this.currentUser === null && this.isAlreadyPlayed) {
         processor.onaudioprocess = null;
         return;
       }

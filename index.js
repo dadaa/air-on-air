@@ -1,6 +1,6 @@
 class App {
   constructor() {
-    this.onClickConnect = this.onClickConnect.bind(this);
+    this.onClickPlay = this.onClickPlay.bind(this);
     this.onClickAudioMuting = this.onClickAudioMuting.bind(this);
 
     this.onData = this.onData.bind(this);
@@ -30,7 +30,9 @@ class App {
 
     $("#room-label").textContent = this.roomId;
     $("#audio-muting").addEventListener("click", this.onClickAudioMuting);
-    $("#connect-button").addEventListener("click", this.onClickConnect);
+    $("#play-button").addEventListener("click", this.onClickPlay);
+
+    await this.connect();
   }
 
   async connect() {
@@ -40,7 +42,6 @@ class App {
     const room = peer.joinRoom(this.roomId, {
       mode: this.network,
     });
-    const stream = await this.getAudioStream();
 
     room.on("data", this.onData);
     room.on("stream", this.onStream);
@@ -48,9 +49,6 @@ class App {
 
     this.peer = peer;
     this.room = room;
-    this.stream = stream;
-
-    this.play();
   }
 
   connectPeer(key) {
@@ -65,28 +63,44 @@ class App {
   }
 
   async getAudioStream() {
-    const stream = await navigator.mediaDevices.getUserMedia({
-      audio: true,
-      video: false,
-    });
-    return stream;
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: true,
+        video: false,
+      });
+      return stream;
+    } catch (e) {
+      console.error(e);
+      $("#play-form").classList.add("error");
+      $("#play-form").textContent = `${ e.name }: please reload`;
+      return null;
+    }
   }
 
-  play() {
+  async play() {
+    const stream = await this.getAudioStream();
+
+    if (!stream) {
+      return;
+    }
+
+    $("#play-form").classList.add("hidden");
     const AudioContext = window.AudioContext || window.webkitAudioContext;
     const audioContext = new AudioContext();
-    const mediaStreamSource = audioContext.createMediaStreamSource(this.stream);
+    const mediaStreamSource = audioContext.createMediaStreamSource(stream);
 	  const processor = audioContext.createScriptProcessor(512);
 
     const tickEls = document.querySelectorAll(".indicator-tick");
 
     let previousTime = Date.now();
 	  processor.onaudioprocess = e => {
-      if (this.currentUser === null && this.isAlreadyPlayed) {
+      if (true || this.currentUser === null && this.isAlreadyPlayed) {
+        processor.onaudioprocess = null;
         return;
       }
 
       if (this.currentUser && this.currentUser !== this.peer.id) {
+        processor.onaudioprocess = null;
         return;
       }
 
@@ -128,16 +142,8 @@ class App {
     track.enabled = !target.classList.contains("disabled");
   }
 
-  async onClickConnect() {
-    $("#connect-button").disabled = true;
-
-    try {
-      await this.connect();
-    } catch (e) {
-      console.log(e);
-    }
-
-    $("#connect-form").remove();
+  async onClickPlay() {
+    this.play();
   }
 
   async onData({ data }) {

@@ -111,7 +111,7 @@ class App {
 
     const deviceId = nextDevice.deviceId;
     const stream = await navigator.mediaDevices.getUserMedia({
-      audio: true,
+      audio: false,
       video: { deviceId: deviceId },
     });
 

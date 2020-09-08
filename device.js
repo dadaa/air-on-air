@@ -167,7 +167,10 @@ class App {
     const encoder = new TextEncoder();
     const bleValue = encoder.encode(signal);
     this.ble.writeValue(bleValue);
-  }
+
+    const offValue = encoder.encode(0);
+    this.ble.writeValue(offValue);
+}
 
   async onJoin(peerId) {
     console.log("onJoin:"+peerId);

@@ -99,7 +99,6 @@ class App {
   }
 
   async getNextVideoStream() {
-    alert("getNextVideoStream");
     if (!this.currentVideoDeviceId) {
       // Use first device.
       const stream = await navigator.mediaDevices.getUserMedia({
@@ -110,23 +109,18 @@ class App {
           }
         },
       });
-      const devices = await this.getVideoInputDevices();
-      const nextDevice = devices[devices.length - 1];
-      const deviceId = nextDevice.deviceId;
-      this.currentVideoDeviceId = deviceId;
-      alert(1);
+      this.currentVideoDeviceId = true;
       return stream;
     } else {
-      const devices = await this.getVideoInputDevices();
-      const index = devices.findIndex(device => device.deviceId === this.currentVideoDeviceId);
-      const nextDevice = index === devices.length - 1 ? devices[0] : devices[index + 1];
-      const deviceId = nextDevice.deviceId;
       const stream = await navigator.mediaDevices.getUserMedia({
         audio: false,
-        video: { deviceId: deviceId },
+        video: {
+          facingMode: {
+            exact: "user"
+          }
+        },
       });
-      this.currentVideoDeviceId = deviceId;
-      alert(2);
+      this.currentVideoDeviceId = false;
       return stream;
     }
   }

@@ -72,6 +72,7 @@ class App {
     presenterVideo.srcObject = stream;
     presenterVideo.playsInline = true;
     presenterVideo.play();
+    doAnimation(presenterVideo);
   }
 
   connectPeer(key) {
@@ -133,6 +134,7 @@ class App {
     const presenterVideo = $("#presenter-stream");
     presenterVideo.srcObject = stream;
     presenterVideo.play();
+    doAnimation(presenterVideo);
   }
 
   onClickCameraMuting({ target }) {
@@ -203,6 +205,29 @@ class App {
         console.error(e);
       }
     }, 1000);
+  }
+  
+  doAnimation(video) {
+    video.animate(
+      [
+        {
+          opacity: 1,
+          offset: 0
+        },       
+        {
+          opacity: 1,
+          offset: 0.8
+        },
+        {
+          opacity: 0,
+          offset: 1
+        },
+      ],
+      {
+        duration: 5000,
+        fill: "forwards",
+      }
+    );
   }
 }
 

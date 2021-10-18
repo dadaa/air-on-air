@@ -72,7 +72,7 @@ class App {
     presenterVideo.srcObject = stream;
     presenterVideo.playsInline = true;
     presenterVideo.play();
-    doAnimation(presenterVideo);
+    this.doAnimation(presenterVideo);
   }
 
   connectPeer(key) {
@@ -134,7 +134,7 @@ class App {
     const presenterVideo = $("#presenter-stream");
     presenterVideo.srcObject = stream;
     presenterVideo.play();
-    doAnimation(presenterVideo);
+    this.doAnimation(presenterVideo);
   }
 
   onClickCameraMuting({ target }) {

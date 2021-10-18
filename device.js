@@ -208,6 +208,7 @@ class App {
   }
   
   doAnimation(video) {
+    alert("do animation");
     video.animate(
       [
         {

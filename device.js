@@ -105,7 +105,7 @@ class App {
         audio: false,
         video: {
           facingMode: {
-            exact: "environment"
+            exact: "user"
           }
         },
       });
@@ -116,7 +116,7 @@ class App {
         audio: false,
         video: {
           facingMode: {
-            exact: "user"
+            exact: "environment"
           }
         },
       });

@@ -52,7 +52,7 @@ class App {
 
     const peer = await this.connectPeer(this.key);
     const stream = await this.getNextVideoStream();
-    const ble = await this.getBLECharacteristic();
+//    const ble = await this.getBLECharacteristic();
 
     const room = peer.joinRoom(this.roomId, {
       mode: this.network,
@@ -65,7 +65,7 @@ class App {
 
     this.peer = peer;
     this.room = room;
-    this.ble = ble;
+//    this.ble = ble;
 
     const presenterVideo = $("#presenter-stream");
     presenterVideo.muted = true;
@@ -173,7 +173,7 @@ class App {
     console.log("signal:"+data.signal);
     const encoder = new TextEncoder();
     const bleValue = encoder.encode(signal);
-    this.ble.writeValue(bleValue);
+//    this.ble.writeValue(bleValue);
   }
 
   async onJoin(peerId) {
@@ -205,7 +205,7 @@ class App {
       try {
         const encoder = new TextEncoder();
         const offValue = encoder.encode("0");
-        this.ble.writeValue(offValue);  
+//        this.ble.writeValue(offValue);  
       } catch (e) {
         console.error(e);
       }
